@@ -30,20 +30,23 @@ class Rag():
         append to created vector store from file path\n
         if not found, creates vector store
         """
+        print("load started")
         loader = self.CSVLoader(file_path=f_path)
         documents = loader.load()
 
         if not self.os.path.exists(self.db): #couldnt get create empty db to work, had to use this 
             ov = self.FAISS.from_documents(
                 documents=documents,
-                embedding=self.o_embed)
-            ov.save_local(self.db)       
+                embedding=self.o_embed)   
+            print("created db")  
         else:
+            print("using existing db")
             ov=self.FAISS.load_local(self.db,self.o_embed, allow_dangerous_deserialization=True)
             ov.add_documents(
             documents=documents,
             embedding=self.o_embed)
-            ov.save_local(self.db)              
+        ov.save_local(self.db)     
+        print("load ended")         
 
      
 
