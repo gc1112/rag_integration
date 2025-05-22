@@ -7,6 +7,8 @@ class Rag():
     from langchain_community.document_loaders import CSVLoader
     from langchain_community.vectorstores import FAISS #using cpu version, chang to gpu on server
     import re
+    import pandas
+    import os
 
     def __init__(self,db,OLLAMA_SERVER_URL, model):
         """
@@ -15,7 +17,7 @@ class Rag():
         model: name of the model to connect at url
         """
         self.db = db
-        self.__set_o_embed(OLLAMA_SERVER_URL,model) # OllamaEmbeddings cannot run in init, had to use this bypass 
+        self.__set_o_embed(OLLAMA_SERVER_URL,model) # OllamaEmbeddings cannot run in init, had to use this bypass , otherwise cannot pass model, url to o_embed
     
     o_embed = None 
     def __set_o_embed(self,url,model):
@@ -23,32 +25,29 @@ class Rag():
             model=model,
             base_url=url)
 
-    def create_vector_store(self,f):#TODO add function for loading bar, embedding can take a while
-        """
-        create vector store from file path given\n
-        name defined in class
-        """
-        loader = self.CSVLoader(file_path=f)
-        documents = loader.load()
-        print(documents)
-        ov = self.FAISS.from_documents(
-        documents=documents,
-        embedding=self.o_embed)
-        ov.save_local(self.db)        
-
-    def add_vector_store(self,f):
+    def add_vector_store(self,f_path):
         """
         append to created vector store from file path\n
-        need to check if store exist first
+        if not found, creates vector store
         """
-        with open(f,'r') as f:
+        loader = self.CSVLoader(file_path=f_path)
+        documents = loader.load()
+
+        if not self.os.path.exists(self.db): #couldnt get create empty db to work, had to use this 
+            ov = self.FAISS.from_documents(
+                documents=documents,
+                embedding=self.o_embed)
+            ov.save_local(self.db)       
+        else:
             ov=self.FAISS.load_local(self.db,self.o_embed, allow_dangerous_deserialization=True)
-            loader = self.CSVLoader(file_path=f)
-            documents = loader.load()
             ov.add_documents(
             documents=documents,
             embedding=self.o_embed)
-            ov.save_local(self.db)  
+            ov.save_local(self.db)              
+
+     
+
+
     
     def submit_query(self,query):#regular rag retrieve
         o_vectstore = self.FAISS.load_local(self.db,self.o_embed, allow_dangerous_deserialization=True)
