@@ -7,7 +7,6 @@ class Rag():
     from langchain_community.document_loaders import CSVLoader
     from langchain_community.vectorstores import FAISS #using cpu version, chang to gpu on server
     import re
-    import pandas
     import os
 
     def __init__(self,db,OLLAMA_SERVER_URL, model):
