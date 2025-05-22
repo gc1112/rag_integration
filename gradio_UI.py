@@ -106,8 +106,8 @@ with gr.Blocks() as demo:
             export_file = gr.File(label="Edited Excel File")
 
             #db create, rag_changes
-            db_create_button = gr.UploadButton("create a new database -Warning: will overwrite current db", type='filepath', file_count="single")
-            db_create_button.upload(fn=rag.create_vector_store, inputs=db_create_button)
+            # db_create_button = gr.UploadButton("create a new database -Warning: will overwrite current db", type='filepath', file_count="single")
+            # db_create_button.upload(fn=rag.create_vector_store, inputs=db_create_button)
             #db update, rag_changes
             db_add_button = gr.UploadButton("add more data to current database", type='filepath', file_count="single")
             db_add_button.upload(fn=rag.add_vector_store, inputs=db_add_button)
