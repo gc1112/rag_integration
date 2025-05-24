@@ -30,8 +30,10 @@ class Rag():
         if not found, creates vector store
         """
         print("load started")
-        loader = self.CSVLoader(file_path=f_path)
+        loader = self.CSVLoader(file_path=f_path, encoding="UTF-8")
         documents = loader.load()
+
+        
 
         if not self.os.path.exists(self.db): #couldnt get create empty db to work, had to use this 
             ov = self.FAISS.from_documents(
@@ -42,7 +44,7 @@ class Rag():
             print("using existing db")
             ov=self.FAISS.load_local(self.db,self.o_embed, allow_dangerous_deserialization=True)
             ov.add_documents(
-            documents=documents,
+            documents=documents, 
             embedding=self.o_embed)
         ov.save_local(self.db)     
         print("load ended")         
@@ -80,5 +82,5 @@ class Rag():
                 pattern = f'{i}(.*?)({seperator})'
                 result = self.re.search(pattern, query, self.re.DOTALL | self.re.IGNORECASE)
                 prompt += f"{i} is {result.group(1).strip()}," #TODO test prompt format to seperate value pairs
-
+        print(prompt)
         return prompt
