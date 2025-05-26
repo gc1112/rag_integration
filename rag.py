@@ -8,6 +8,7 @@ class Rag():
     from langchain_community.vectorstores import FAISS #using cpu version, chang to gpu on server
     import re
     import os
+    import pandas as pd
 
     def __init__(self,db,OLLAMA_SERVER_URL, model):
         """
@@ -32,6 +33,7 @@ class Rag():
         print("load started")
         loader = self.CSVLoader(file_path=f_path, encoding="UTF-8")
         documents = loader.load()
+        data = self.pd.read_csv(f_path)
 
         
 
@@ -39,6 +41,7 @@ class Rag():
             ov = self.FAISS.from_documents(
                 documents=documents,
                 embedding=self.o_embed)   
+            data.to_csv('data.csv')
             print("created db")  
         else:
             print("using existing db")
@@ -46,12 +49,10 @@ class Rag():
             ov.add_documents(
             documents=documents, 
             embedding=self.o_embed)
+            old_data = self.pd.read_csv('data.csv')
+            self.pd.concat([data,old_data]).drop_duplicates(keep=False)
         ov.save_local(self.db)     
         print("load ended")         
-
-     
-
-
     
     def submit_query(self,query):#regular rag retrieve
         o_vectstore = self.FAISS.load_local(self.db,self.o_embed, allow_dangerous_deserialization=True)
@@ -84,3 +85,6 @@ class Rag():
                 prompt += f"{i} is {result.group(1).strip()}," #TODO test prompt format to seperate value pairs
         print(prompt)
         return prompt
+    
+    def get_data(self):
+        data = self.pd.read_csv("data.csv")
