@@ -66,7 +66,7 @@ class Rag():
             return "embedding file not found, check if it is created and name is correct"
     
 
-    def query_parser(self,query, keywords = ["vector", "cause", "asset", "consequence"]):
+    def query_parser(self,query, keywords = ["event", "cause", "asset", "consequence"]):
         """
         parse query from user, produce prompt that can be sent to ollama\n
         check if keyword exists and match anything after it until the next keyword\n

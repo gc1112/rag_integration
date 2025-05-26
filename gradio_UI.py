@@ -111,6 +111,9 @@ def editable_export_excel(editable_output):
         return gr.File(file_name)
     except Exception as e:
         return str(e)
+    
+def db_get():
+    return gr.File("data.csv")
         
 #----- User Interface ---------------------------------------------------------------------------
 with gr.Blocks(theme=gr.themes.Citrus()) as demo:
@@ -134,11 +137,15 @@ with gr.Blocks(theme=gr.themes.Citrus()) as demo:
             # db_create_button = gr.UploadButton("create a new database -Warning: will overwrite current db", type='filepath', file_count="single")
             # db_create_button.upload(fn=rag.create_vector_store, inputs=db_create_button)
             #db update, rag_changes
-            db_add_button = gr.UploadButton("add more data to current database", type='filepath', file_count="single")
-            db_add_button.upload(fn=rag.add_vector_store, inputs=db_add_button)
+            with gr.Row():
+                db_add_button = gr.UploadButton("add more data to current database", type='filepath', file_count="single")
+                db_add_button.upload(fn=rag.add_vector_store, inputs=db_add_button)
+                db_get_button = gr.Button("download currently stored data")
+                db_get_button.click(fn=db_get)
 
         def clear_input():
             return ""
+
 
         clear_button.click(clear_input, inputs=None, outputs=input)
         submit_button.click(query_ollama, inputs=input, outputs=output, show_progress=True)
