@@ -111,9 +111,6 @@ def editable_export_excel(editable_output):
         return gr.File(file_name)
     except Exception as e:
         return str(e)
-    
-def db_get():
-    return gr.File("data.csv")
         
 #----- User Interface ---------------------------------------------------------------------------
 with gr.Blocks(theme=gr.themes.Citrus()) as demo:
@@ -127,7 +124,7 @@ with gr.Blocks(theme=gr.themes.Citrus()) as demo:
                 clear_button = gr.Button("Clear")
                 submit_button = gr.Button("Submit")
             gr.Markdown("<b>How to chat with CRISE:</b>")
-            gr.Markdown("The threat is: {Threat_Event}<br>This threat is caused by: {Vulnerability}<br>This puts the {Asset} at risk<br>Leading to consequences like: {Consequence}")
+            gr.Markdown("threat {Threat_Event}<br>cause {Vulnerability}<br>asset {Asset at risk}<br>consequence {example consequences}")
         with gr.Column():
             output = gr.Textbox(label="Editable Output", interactive=True)
             export_button = gr.Button("Export Output - Excel")
@@ -140,8 +137,7 @@ with gr.Blocks(theme=gr.themes.Citrus()) as demo:
             with gr.Row():
                 db_add_button = gr.UploadButton("add more data to current database", type='filepath', file_count="single")
                 db_add_button.upload(fn=rag.add_vector_store, inputs=db_add_button)
-                db_get_button = gr.Button("download currently stored data")
-                db_get_button.click(fn=db_get)
+                db_get_button = gr.DownloadButton("download currently stored data",value=".\\data.csv")
 
         def clear_input():
             return ""
